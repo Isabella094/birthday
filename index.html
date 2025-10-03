@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>生日</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Baloo 2', cursive;
+      background: linear-gradient(135deg, #a5c8ff, #fef18b); 
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    #birthdayText {
+      font-size: 2.8rem;
+      color: #9a5bdb;
+      text-shadow: 0 0 8px rgba(255,255,255,0.8), 2px 2px 6px rgba(237, 83, 83, 0.2);
+      margin-bottom: 60px;
+      opacity: 0;
+      animation: textFloat 3s ease-out forwards, glow 2s infinite alternate;
+    }
+
+    @keyframes textFloat {
+      0%   { transform: translateY(80px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 5px #fff, 0 0 10px #1c79fa; }
+      to   { text-shadow: 0 0 10px #fff, 0 0 20px hsl(261, 79%, 51%); }
+    }
+
+    .button-container {
+      display: flex;
+      gap: 20px;
+      opacity: 0;
+    }
+
+    .button-container.show {
+      animation: buttonsUp 2s ease-out forwards;
+      animation-delay: 1.2s;
+    }
+
+    @keyframes buttonsUp {
+      from { transform: translateY(80px); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
+    }
+
+    .person-btn {
+      font-size: 1.6rem;
+      padding: 14px 36px;
+      border: none;
+      border-radius: 40px;
+      background: hsla(300, 76%, 77%, 0.414);
+      color: #ffffffd9;
+      cursor: pointer;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      animation: glowBtn 2s infinite alternate;
+    }
+
+    .person-btn:hover {
+      background: #c08bff; 
+      transform: scale(1.05);
+    }
+
+    @keyframes glowBtn {
+      from { box-shadow: 0 0 10px #9a5bdb; }
+      to   { box-shadow: 0 0 25px #c08bff; }
+    }
+
+    .hidden { display: none; }
+
+    #bgCanvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    .heart {
+      position: absolute;
+      font-size: 20px;
+      color: red;
+      animation: floatUp 1s ease-out forwards;
+    }
+
+    @keyframes floatUp {
+      from { transform: translateY(0) scale(1); opacity: 1; }
+      to   { transform: translateY(-100px) scale(0.5); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="bgCanvas"></canvas>
+
+  <h1 id="birthdayText"> 🎉 Happy Birthday 🎂 </h1>
+
+  <div class="button-container hidden">
+    <button class="person-btn" id="dadBtn">爸爸</button>
+    <button class="person-btn" id="sisterBtn">姐姐</button>
+  </div>
+
+  <audio id="birthdayAudio" src="birthday.mp3" loop autoplay></audio>
+
+  <script>
+    const birthdayText = document.getElementById("birthdayText");
+    const buttonContainer = document.querySelector(".button-container");
+    const dadBtn = document.getElementById("dadBtn");
+    const sisterBtn = document.getElementById("sisterBtn");
+    const audio = document.getElementById("birthdayAudio");
+
+    audio.loop = true;
+    audio.play().catch(() => console.log("自動播放被瀏覽器阻擋"));
+
+    setTimeout(() => {
+      buttonContainer.classList.remove("hidden");
+      buttonContainer.classList.add("show");
+    }, 1000);
+
+    function celebrateAndRedirect(person, btn, url = null) {
+      for (let i = 0; i < 10; i++) {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.innerText = "❤";
+        heart.style.left = btn.offsetLeft + btn.offsetWidth / 2 + (Math.random()*60-30) + "px";
+        heart.style.top = btn.offsetTop + "px";
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 1000);
+      }
+
+      btn.animate([
+        { transform: "scale(1)" },
+        { transform: "scale(1.2)" },
+        { transform: "scale(1)" }
+      ], { duration: 300 });
+
+      if (url) {
+        setTimeout(() => {
+          location.href = url;
+        }, 500);
+      }
+    }
+
+    dadBtn.addEventListener("click", () => celebrateAndRedirect("爸爸", dadBtn, "dad.html"));
+    sisterBtn.addEventListener("click", () => celebrateAndRedirect("姐姐", sisterBtn, "sister.html"));
+
+/*-----------------------------------------------------------*/
+
+    const canvas = document.getElementById("bgCanvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const particles = [];
+    const shapes = ["★","❤","✦"];
+    for (let i=0;i<30;i++){
+        particles.push({
+            x: Math.random()*canvas.width,
+            y: Math.random()*canvas.height,
+            size: Math.random()*18+8,
+            speed: Math.random()*0.5+0.2,
+            opacity: Math.random()*0.6+0.2,
+            shape: shapes[Math.floor(Math.random()*shapes.length)]
+        });
+    }
+
+    const fireworks = [];
+    function createFirework(centerX, centerY){
+        for(let i=0;i<60;i++){ 
+            fireworks.push({
+                x: centerX,
+                y: centerY,
+                angle: Math.random()*2*Math.PI,
+                speed: Math.random()*3+2,
+                opacity: 1,
+                color: `hsl(${Math.random()*360},80%,60%)`
+            });
+        }
+    }
+
+    function drawParticles() {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        
+        particles.forEach(p=>{
+            ctx.globalAlpha=p.opacity;
+            ctx.font=`${p.size}px Baloo 2, cursive`;
+            ctx.fillStyle="#fff";
+            ctx.fillText(p.shape,p.x,p.y);
+            p.y -= p.speed;
+            if(p.y<-20){p.y=canvas.height+20; p.x=Math.random()*canvas.width;}
+        });
+
+        fireworks.forEach((fw,i)=>{
+            const vx = Math.cos(fw.angle)*fw.speed;
+            const vy = Math.sin(fw.angle)*fw.speed;
+            fw.x += vx;
+            fw.y += vy;
+            fw.opacity -= 0.015;
+
+            ctx.beginPath();
+            ctx.arc(fw.x, fw.y, 3, 0, Math.PI*2);
+            ctx.fillStyle = `rgba(255,255,255,${fw.opacity})`;
+            ctx.fill();
+            ctx.fillStyle = fw.color;
+            ctx.fill();
+
+            if(fw.opacity<=0) fireworks.splice(i,1);
+        });
+
+        requestAnimationFrame(drawParticles);
+    }
+
+    setInterval(()=>{
+        const positions = [
+            [canvas.width/2, canvas.height/2],
+            [canvas.width/3, canvas.height/3],
+            [canvas.width*2/3, canvas.height/2.5],
+            [canvas.width/4, canvas.height*3/4],
+            [canvas.width*3/4, canvas.height*3/5]
+        ];
+        positions.forEach(pos => createFirework(pos[0], pos[1]));
+    },1500);
+
+    window.addEventListener("resize",()=>{
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+
+    drawParticles();
+  </script>
+</body>
+</html>
