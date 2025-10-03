@@ -4,10 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DADDY</title>
+
+<!-- 引入 Baloo 2 字體 -->
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&display=swap" rel="stylesheet">
+
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
+
   body {
-    font-family: 'Arial Black', sans-serif;
+    font-family: 'Baloo 2', cursive;
     background: #000;
     overflow: hidden;
     height: 100vh;
@@ -52,13 +57,11 @@
     width: 100%;
     overflow: hidden;
     white-space: nowrap;
-    font-size: 3rem;
-    font-weight: bold;
-    text-shadow: 0 0 5px #3adafa,
-                 0 0 15px #4efcfc,
-                 0 0 25px #ff00ff5a,
-                 0 0 40px #ff00ff60,
-                 0 0 60px #ff00ff62;
+    font-family: 'Baloo 2', cursive;
+    font-size: 2.8rem;  /* 與 index.html 相同大小 */
+    font-weight: 700;
+    text-shadow: 0 0 8px rgba(255,255,255,0.8),
+                 2px 2px 6px rgba(237, 83, 83, 0.2);
     z-index: 2;
   }
 
@@ -69,6 +72,12 @@
   .marquee-track span {
     display: inline-block;
     padding: 0 2rem;
+    animation: glow 2s infinite alternate;
+  }
+
+  @keyframes glow {
+    from { text-shadow: 0 0 5px #fff, 0 0 10px #1c79fa; }
+    to   { text-shadow: 0 0 10px #fff, 0 0 20px hsl(261, 79%, 51%); }
   }
 
   .marquee-left { top: 30%; color: #00ffcc; }
@@ -97,6 +106,8 @@
     transform: translate(-50%, -50%);
     padding: 15px 50px;
     font-size: 2rem;
+    font-family: 'Baloo 2', cursive;
+    font-weight: 700;
     color: #fff;
     background: rgba(255,255,255,0.05);
     border: 2px solid #ffea00;
@@ -118,7 +129,6 @@
     100% { opacity:1; transform:translate(-50%, -50%);} 
   }
 
-  /* 背景板手 */
   .bg-tool {
     position: absolute;
     width: 100px;
@@ -145,14 +155,12 @@
 
 <button class="home-btn" onclick="location.href='index.html'">Home</button>
 
-
 <div class="marquee-container marquee-left">
   <div class="marquee-track">
     <span>✦ AYAO DADDY ✦ AYAO DADDY ✦ AYAO DADDY ✦ AYAO DADDY ✦</span>
     <span>✦ AYAO DADDY ✦ AYAO DADDY ✦ AYAO DADDY ✦ AYAO DADDY ✦</span>
   </div>
 </div>
-
 
 <div class="marquee-container marquee-right">
   <div class="marquee-track">
@@ -164,7 +172,6 @@
 <button class="continue-btn" onclick="location.href='dad2.html'">繼續</button>
 
 <script>
-
 const canvas = document.getElementById('starfield');
 const ctx = canvas.getContext('2d');
 let W, H;
@@ -176,9 +183,7 @@ window.addEventListener('resize', resize);
 resize();
 
 class Star {
-  constructor(){
-    this.reset();
-  }
+  constructor(){ this.reset(); }
   reset(){
     this.x = Math.random()*W;
     this.y = Math.random()*H;
@@ -198,9 +203,7 @@ class Star {
 }
 
 class Meteor {
-  constructor(){
-    this.reset();
-  }
+  constructor(){ this.reset(); }
   reset(){
     this.x = Math.random()*W;
     this.y = -20;
@@ -231,40 +234,13 @@ let meteors = [];
 
 function animate(){
   ctx.clearRect(0,0,W,H);
-  stars.forEach(s=>{
-    s.update();
-    s.draw();
-  });
+  stars.forEach(s=>{ s.update(); s.draw(); });
   if(Math.random()<0.01) meteors.push(new Meteor());
-  meteors.forEach(m=>{
-    m.update();
-    m.draw();
-  });
+  meteors.forEach(m=>{ m.update(); m.draw(); });
   meteors = meteors.filter(m=>m.alpha>0);
   requestAnimationFrame(animate);
 }
 animate();
-
-const NUM_TOOLS = 12;
-const usedPositions = [];
-const minDistance = 12;
-for(let i=0;i<NUM_TOOLS;i++){
-  const tool = document.createElement('img');
-  tool.src = 'images/板手.png';
-  tool.className = 'bg-tool';
-  let attempts = 0;
-  let topPerc, leftPerc;
-  do {
-    topPerc = Math.random()*80 +10;
-    leftPerc = Math.random()*80 +10;
-    attempts++;
-  } while (usedPositions.some(p => Math.hypot(p[0]-leftPerc,p[1]-topPerc)<minDistance) && attempts<100);
-  usedPositions.push([leftPerc, topPerc]);
-  tool.style.top = topPerc+'%';
-  tool.style.left = leftPerc+'%';
-  tool.style.animationDuration = (Math.random()*4+3)+'s';
-  document.body.appendChild(tool);
-}
 </script>
 
 </body>
