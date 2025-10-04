@@ -25,15 +25,15 @@
       flex-direction: column;
     }
 
-
     #birthdayText {
-      font-size: 2.8rem;
+      font-size: 1.8rem; /* 改成更小 */
       color: #9a5bdb;
       text-shadow: 0 0 8px rgba(255,255,255,0.8), 2px 2px 6px rgba(237, 83, 83, 0.2);
       margin-bottom: 60px;
       opacity: 0;
       animation: textFloat 3s ease-out forwards, glow 2s infinite alternate;
     }
+
 
     @keyframes textFloat {
       0%   { transform: translateY(80px); opacity: 0; }
@@ -111,7 +111,7 @@
 
   <canvas id="bgCanvas"></canvas>
 
-  <h6 id="birthdayText"> 🎉 Happy Birthday 🎂 </h6>
+  <h6 id="birthdayText"> Happy Birthday</h6>
 
   <div class="button-container hidden">
     <button class="person-btn" id="dadBtn">爸爸</button>
